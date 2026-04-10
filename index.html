@@ -1,10 +1,84 @@
-<html>
+<!doctype html>
+<html lang="es">
     <head>
-
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <title>Login</title>
+        <style>
+            body{font-family:Segoe UI,Arial,Helvetica,sans-serif;background:#f4f7fb;display:flex;align-items:center;justify-content:center;height:100vh;margin:0}
+            .login-card{background:#fff;padding:2rem;border-radius:10px;box-shadow:0 6px 20px rgba(15,15,15,0.08);width:340px}
+            h2{margin:0 0 1rem;font-size:1.2rem;color:#111;text-align:center}
+            .input{margin-bottom:0.85rem}
+            .label{display:block;margin-bottom:0.25rem;color:#555;font-size:0.9rem}
+            input[type="text"],input[type="password"]{width:100%;padding:0.6rem;border:1px solid #dfe6ee;border-radius:6px;font-size:1rem}
+            button{width:100%;padding:0.7rem;border:0;border-radius:6px;background:#2563eb;color:#fff;font-weight:600;cursor:pointer}
+            button:active{transform:translateY(1px)}
+            .msg{font-size:0.9rem;margin-top:0.5rem;text-align:center}
+            .msg.error{color:#ef4444}
+            .msg.success{color:#10b981}
+            .footer{font-size:0.85rem;text-align:center;margin-top:0.75rem;color:#6b7280}
+        </style>
     </head>
     <body>
-        <h1>HOLA ESAN </h1>
-        <button>Enviar</button>
-    </body>
+        <div class="login-card" id="card">
+            <h2>Iniciar sesión</h2>
+            <div class="input">
+                <label class="label" for="user">Usuario</label>
+                <input id="user" type="text" placeholder="usuario" />
+            </div>
+            <div class="input">
+                <label class="label" for="pass">Contraseña</label>
+                <input id="pass" type="password" placeholder="contraseña" />
+            </div>
+            <button id="loginBtn">Entrar</button>
+            <div class="msg" id="msg"></div>
+            <div class="footer">Credenciales de prueba: <strong>admin / 12345</strong></div>
+        </div>
 
+        <script>
+            (function(){
+                const loginBtn = document.getElementById('loginBtn');
+                const userInput = document.getElementById('user');
+                const passInput = document.getElementById('pass');
+                const msg = document.getElementById('msg');
+
+                const CREDENTIALS = {user:'admin', pass:'12345'};
+
+                function showMessage(text, type){
+                    msg.textContent = text;
+                    msg.className = 'msg ' + (type === 'success' ? 'success' : 'error');
+                }
+
+                loginBtn.addEventListener('click', function(){
+                    const user = userInput.value.trim();
+                    const pass = passInput.value;
+                    if(!user || !pass){ showMessage('Rellena ambos campos', 'error'); return; }
+                    if(user === CREDENTIALS.user && pass === CREDENTIALS.pass){
+                        showMessage('Acceso correcto. Bienvenido, ' + user + '!', 'success');
+                        localStorage.setItem('loggedUser', user);
+                        setTimeout(()=> {
+                            const card = document.getElementById('card');
+                            card.innerHTML = '<h2>Bienvenido, ' + user + '</h2><p style="text-align:center;margin-top:1rem"><button id="logout">Cerrar sesión</button></p>';
+                            document.getElementById('logout').addEventListener('click', ()=> {
+                                localStorage.removeItem('loggedUser');
+                                location.reload();
+                            });
+                        }, 800);
+                    } else {
+                        showMessage('Usuario o contraseña incorrectos', 'error');
+                    }
+                });
+
+                const saved = localStorage.getItem('loggedUser');
+                if(saved){
+                    const card = document.getElementById('card');
+                    card.innerHTML = '<h2>Bienvenido, ' + saved + '</h2><p style="text-align:center;margin-top:1rem"><button id="logout">Cerrar sesión</button></p>';
+                    document.getElementById('logout').addEventListener('click', ()=> {
+                        localStorage.removeItem('loggedUser');
+                        location.reload();
+                    });
+                }
+            })();
+        </script>
+    </body>
 </html>
